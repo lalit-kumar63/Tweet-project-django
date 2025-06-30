@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Custom Admin Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 220px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .sidebar h2 { margin: 0; text-align: center; }
+        .sidebar ul { list-style: none; padding: 0; margin-top: 20px; }
+        .sidebar ul li { border-bottom: 1px solid #444; }
+        .sidebar ul li a {
+            color: #fff; text-decoration: none; display: block; padding: 10px;
+        }
+        .sidebar ul li a:hover { background-color: #444; }
+        .main {
+            flex: 1; padding: 20px; box-sizing: border-box;
+            background-color: #f9f9f9;
+        }
+        .header {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+        }
+        .header-links { display: flex; gap: 10px; }
+        .button {
+            background-color: #28a745; color: white; padding: 8px 12px;
+            text-decoration: none; border-radius: 4px;
+        }
+        .logout {
+            background-color: #c00; color: white; padding: 8px 12px;
+            text-decoration: none; border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+        tr:hover { background-color: #f1f1f1; }
+        .actions a {
+            margin-right: 5px;
+            padding: 5px 8px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #fff;
+        }
+        .view-btn { background-color: #007bff; }
+        .edit-btn { background-color: #ffc107; color: #333; }
+        .delete-btn { background-color: #dc3545; }
+        .no-data { text-align: center; color: #999; margin-top: 50px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul>
+            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'tweet_create' %}">Create Tweet</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div class="header">
+            <h1>Dashboard</h1>
+            <div class="header-links">
+                <a class="button" href="{% url 'tweet_create' %}">+ New Tweet</a>
+                <a class="logout" href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color: green;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {% if tweets %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Text</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tweet in tweets %}
+                    <tr>
+                        <td>{{ tweet.id }}</td>
+                        <td>{{ tweet.user.username }}</td>
+                        <td>{{ tweet.text|truncatechars:50 }}</td>
+                        <td>{{ tweet.created_at|date:"Y-m-d H:i" }}</td>
+                        <td class="actions">
+                            <a class="view-btn" href="{% url 'tweet_detail' tweet.id %}">View</a>
+                            <a class="edit-btn" href="{% url 'tweet_update' tweet.id %}">Edit</a>
+                            <a class="delete-btn" href="{% url 'tweet_delete' tweet.id %}">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="no-data">
+                <p>No tweets found.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

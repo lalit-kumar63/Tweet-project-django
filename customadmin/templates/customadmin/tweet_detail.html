@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Tweet Detail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #343a40;
+        }
+
+        p {
+            font-size: 16px;
+            color: #555;
+            margin: 12px 0;
+        }
+
+        strong {
+            color: #333;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 20px auto;
+            border-radius: 8px;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .actions a {
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 16px;
+            border-radius: 5px;
+            margin: 0 8px;
+            transition: background-color 0.3s;
+        }
+
+        .actions a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tweet Detail (ID: {{ tweet.id }})</h1>
+        <p><strong>User:</strong> {{ tweet.user.username }}</p>
+        <p><strong>Text:</strong> {{ tweet.text }}</p>
+        <p><strong>Created:</strong> {{ tweet.created_at }}</p>
+
+        {% if tweet.photo %}
+            <img src="{{ tweet.photo.url }}" alt="Photo">
+        {% endif %}
+
+        <div class="actions">
+            <a href="{% url 'tweet_update' tweet.id %}">Edit</a>
+            <a href="{% url 'tweet_delete' tweet.id %}">Delete</a>
+            <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>
