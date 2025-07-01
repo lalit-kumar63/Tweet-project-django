@@ -3,24 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ action }} Tweet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: #fff;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        textarea:focus,
+        input[type="file"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        img {
+            display: block;
+            max-width: 200px;
+            height: auto;
+            margin-top: 10px;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ action }} Tweet</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label>Text:</label><br>
-        <textarea name="text" rows="4" cols="50">{% if tweet %}{{ tweet.text }}{% endif %}</textarea><br><br>
-        
-        <label>Photo:</label><br>
-        <input type="file" name="photo"><br>
-        {% if tweet and tweet.photo %}
-            <img src="{{ tweet.photo.url }}" style="max-width:200px;"><br>
-        {% endif %}
-        <br>
-        
-        <button type="submit">{{ action }}</button>
-    </form>
-    <br>
-    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+    <div class="container">
+        <h1>{{ action }} Tweet</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="text">Text:</label>
+            <textarea id="text" name="text" rows="4" placeholder="Write your tweet here...">{% if tweet %}{{ tweet.text }}{% endif %}</textarea>
+            
+            <label for="photo">Photo:</label>
+            <input id="photo" type="file" name="photo">
+            
+            {% if tweet and tweet.photo %}
+                <img src="{{ tweet.photo.url }}" alt="Tweet Photo">
+            {% endif %}
+            
+            <button type="submit">{{ action }}</button>
+        </form>
+        <a class="back-link" href="{% url 'customadmin:dashboard' %}">← Back to Dashboard</a>
+    </div>
 </body>
 </html>

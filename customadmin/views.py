@@ -4,12 +4,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from tweet.models import Tweet
+from django.http import HttpResponseNotAllowed
+from django.contrib.auth import logout
 
 # Login for custom admin
 def admin_login(request):
     try:
         if request.user.is_authenticated:
-            return redirect('dashboard')
+            return redirect('customadmin:dashboard')
         
         if request.method == 'POST':
             username = request.POST.get('username')
@@ -25,7 +27,7 @@ def admin_login(request):
             user_obj = authenticate(username=username, password=password)
             if user_obj and user_obj.is_superuser:
                 login(request, user_obj)
-                return redirect('dashboard')
+                return redirect('customadmin:dashboard')
             
             messages.info(request, 'Invalid password')
             return redirect('/')
@@ -62,7 +64,7 @@ def tweet_detail(request, tweet_id):
 
 
 @login_required
-def tweet_create(request):
+def tweet_create_now(request):
     if not request.user.is_superuser:
         return HttpResponse("Unauthorized", status=403)
 
@@ -77,9 +79,9 @@ def tweet_create(request):
             photo=photo
         )
         messages.success(request, "Tweet created successfully!")
-        return redirect('dashboard')
+        return redirect('customadmin:dashboard')
 
-    return render(request, 'customadmin/dashboard.html', {'action': 'Create'})
+    return render(request, 'customadmin/tweet_form.html', {'action': 'Create'})
 
 
 @login_required
@@ -95,14 +97,19 @@ def tweet_update(request, tweet_id):
             tweet.photo = request.FILES['photo']
         tweet.save()
         messages.success(request, "Tweet updated successfully!")
-        return redirect('tweet_detail', tweet_id=tweet.id)
+        return redirect('customadmin:dashboard')
 
     return render(request, 'customadmin/tweet_form.html', {'tweet': tweet, 'action': 'Update'})
 
-from django.shortcuts import render
-from django.http import Http404
+@login_required
 def tweet_delete(request, tweet_id):
-    tweet = get_object_or_404(Tweet, id=tweet_id)
-    tweet.delete()
-    messages.success(request, "Tweet deleted.")
-    return redirect('dashboard')
+    if request.method == 'POST':
+        tweet = get_object_or_404(Tweet, id=tweet_id)
+        tweet.delete()
+        return redirect('customadmin:dashboard')  # Redirect back to admin dashboard
+    return HttpResponseNotAllowed(['POST'])
+
+#logout
+def admin_logout(request):
+    logout(request)
+    return redirect('customadmin:admin_login')   # Replace with your login URL name

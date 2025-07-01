@@ -1,12 +1,21 @@
 {% extends 'layout.html' %}
 
-
 {% block content %}
-    <h2>Register form</h2>
+<div class="form-container">
+    <h2>Register</h2>
     <form method="POST">
         {% csrf_token %}
-        {{form.as_p}}
-        <button class="btn btn-primary">Register</button>
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="error">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn-submit">Register</button>
     </form>
+</div>
 {% endblock content %}
-    
