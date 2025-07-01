@@ -10,46 +10,45 @@ from django.contrib.auth import logout
 # Login for custom admin
 def admin_login(request):
     try:
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and request.user.is_superuser:
+            # Already logged in as superuser
             return redirect('customadmin:dashboard')
-        
+
         if request.method == 'POST':
             username = request.POST.get('username')
             password = request.POST.get('password')
-            
-            # Check if username exists
-            user_obj = User.objects.filter(username=username)
-            if not user_obj.exists():
-                messages.info(request, 'Account not found')
-                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-            
-            # Authenticate user
+
             user_obj = authenticate(username=username, password=password)
-            if user_obj and user_obj.is_superuser:
-                login(request, user_obj)
-                return redirect('customadmin:dashboard')
-            
-            messages.info(request, 'Invalid password')
-            return redirect('/')
-        
-        return render(request, 'customadmin/login.html')
-    
+            if user_obj is None:
+                messages.error(request, 'Invalid username or password.')
+                return render(request, 'customadmin/admin_login.html')
+
+            if not user_obj.is_superuser:
+                messages.error(request, 'You are not authorized as admin.')
+                return render(request, 'customadmin/admin_login.html')
+
+            login(request, user_obj)
+            return redirect('customadmin:dashboard')
+
+        return render(request, 'customadmin/admin_login.html')
+
     except Exception as e:
         print(e)
         return HttpResponse("Internal server error")
+
 
 # Dashboard view
 @login_required
 def dashboard(request):
     if not request.user.is_superuser:
-        return HttpResponse("Unauthorized", status=403)
-    
-    tweets = Tweet.objects.select_related('user').order_by('-created_at')
+        messages.error(request, 'You are not authorized to access the admin dashboard.')
+        return redirect('customadmin:admin_login')
+
+    tweets = Tweet.objects.select_related('user').order_by('created_at')
     context = {
         'tweets': tweets
     }
     return render(request, 'customadmin/dashboard.html', context)
-
 
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt

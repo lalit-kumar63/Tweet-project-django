@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth.urls import views as auth_views
 urlpatterns = [
-    path('djadmin/', admin.site.urls),
+    #path('djadmin/', admin.site.urls),
     path('admin/', include('customadmin.urls')),
     path('tweet/', include('tweet.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
